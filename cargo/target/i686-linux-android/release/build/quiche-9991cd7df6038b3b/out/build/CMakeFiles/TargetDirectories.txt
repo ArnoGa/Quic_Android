@@ -1,0 +1,5 @@
+/home/maxime/Quic_Android/cargo/target/i686-linux-android/release/build/quiche-9991cd7df6038b3b/out/build/CMakeFiles/rebuild_cache.dir
+/home/maxime/Quic_Android/cargo/target/i686-linux-android/release/build/quiche-9991cd7df6038b3b/out/build/CMakeFiles/edit_cache.dir
+/home/maxime/Quic_Android/cargo/target/i686-linux-android/release/build/quiche-9991cd7df6038b3b/out/build/CMakeFiles/bssl.dir
+/home/maxime/Quic_Android/cargo/target/i686-linux-android/release/build/quiche-9991cd7df6038b3b/out/build/CMakeFiles/ssl.dir
+/home/maxime/Quic_Android/cargo/target/i686-linux-android/release/build/quiche-9991cd7df6038b3b/out/build/CMakeFiles/crypto.dir

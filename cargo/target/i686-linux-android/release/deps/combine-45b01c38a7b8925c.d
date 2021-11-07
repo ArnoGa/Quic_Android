@@ -1,0 +1,12 @@
+/home/maxime/Quic_Android/cargo/target/i686-linux-android/release/deps/combine-45b01c38a7b8925c.rmeta: /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/lib.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/primitives.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/combinator.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/range.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/byte.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/char.rs
+
+/home/maxime/Quic_Android/cargo/target/i686-linux-android/release/deps/libcombine-45b01c38a7b8925c.rlib: /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/lib.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/primitives.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/combinator.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/range.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/byte.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/char.rs
+
+/home/maxime/Quic_Android/cargo/target/i686-linux-android/release/deps/combine-45b01c38a7b8925c.d: /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/lib.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/primitives.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/combinator.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/range.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/byte.rs /home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/char.rs
+
+/home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/lib.rs:
+/home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/primitives.rs:
+/home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/combinator.rs:
+/home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/range.rs:
+/home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/byte.rs:
+/home/maxime/.cargo/registry/src/github.com-1ecc6299db9ec823/combine-2.5.2/src/char.rs:

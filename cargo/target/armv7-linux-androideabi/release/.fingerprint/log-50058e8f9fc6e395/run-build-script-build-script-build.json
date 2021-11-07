@@ -1,0 +1,1 @@
+{"rustc":10077412179023509715,"features":"","target":0,"profile":0,"path":0,"deps":[[2421278278125917078,"build_script_build",false,8319281031187863856]],"local":[{"RerunIfChanged":{"output":"armv7-linux-androideabi/release/build/log-50058e8f9fc6e395/output","paths":["build.rs"]}}],"rustflags":[],"metadata":0,"config":0,"compile_kind":0}

@@ -1,0 +1,1 @@
+{"rustc":10077412179023509715,"features":"","target":0,"profile":0,"path":0,"deps":[[1992952915329736785,"build_script_build",false,2196481561634275757]],"local":[{"RerunIfChanged":{"output":"i686-linux-android/release/build/libm-23b54f6e52ae1116/output","paths":["build.rs"]}}],"rustflags":[],"metadata":0,"config":0,"compile_kind":0}
