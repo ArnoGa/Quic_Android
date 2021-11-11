@@ -30,8 +30,8 @@ pub fn run(domain_name: String) -> String {
     let mut out = [0; MAX_DATAGRAM_SIZE];
 
     let url;
-    if domain_name == "localhost" {
-        url = url::Url::parse("https://10.0.2.2:4433").unwrap(); // Emulator local IP
+    if domain_name == "ingi" {
+        url = url::Url::parse("https://130.104.229.81:443").unwrap(); // Ingi server
     }
     else {
         // Domain name
