@@ -4,15 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:spinnerMode="dropdown"
-        android:background="@android:drawable/btn_dropdown"
-        tools:ignore="SpeakableTextPresentCheck" />
+    tools:context=".Activity2">
 
     <TextView
         android:id="@+id/stats"
@@ -29,12 +21,19 @@
         android:onClick="sendMessage"
         android:text="Launch" />
 
+    <EditText
+        android:id="@+id/input"
+        android:layout_width="match_parent"
+        android:layout_height="61dp"
+        android:hint="Domain name"
+        tools:ignore="SpeakableTextPresentCheck" />
+
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:onClick="nextScreen"
-        android:text="Domain name" />
+        android:layout_gravity="bottom|left"
+        android:onClick="previousScreen"
+        android:text="Servers" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
