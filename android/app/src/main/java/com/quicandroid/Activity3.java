@@ -55,7 +55,12 @@ public class Activity3 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Integer... index) {
             String r = g.sendQuicRequest(websites[index[0]]);
-            output.append(r);
+            if (r.startsWith("Result: [success]")) {
+                output.append(String.format("%s -> succeeded", websites[index[0]]));
+            }
+            else {
+                output.append(String.format("%s -> failed", websites[index[0]]));
+            }
             output.append("\n\n");
             System.out.println(output.toString());
             return index[0] == websites.length - 1;

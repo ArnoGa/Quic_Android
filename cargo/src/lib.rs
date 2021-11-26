@@ -12,8 +12,6 @@ use ring::rand::*;
 extern crate mio;
 extern crate url;
 
-use std::net::{IpAddr, Ipv6Addr, SocketAddr, UdpSocket};
-
 const MAX_DATAGRAM_SIZE: usize = 1350;
 
 fn hex_dump(buf: &[u8]) -> String {
@@ -36,7 +34,7 @@ pub fn run(domain_name: String) -> String {
     else {
         // Domain name
         url = match url::Url::parse(&domain_name) {
-            Err(_) => { return "Invalid domain name".to_string(); },
+            Err(_) => { return "[error] Invalid domain name".to_string(); },
             Ok(parsed_url) => parsed_url,
         };
     }
@@ -47,7 +45,7 @@ pub fn run(domain_name: String) -> String {
 
     // Resolve server address.
     let peer_addr = match url.to_socket_addrs() {
-        Err(_) => { return "Cannot resolve server address".to_string(); },
+        Err(_) => { return "[error] Cannot resolve server address".to_string(); },
         Ok(mut peer_addr_result) => peer_addr_result.next().unwrap(),
     };
 
@@ -203,10 +201,10 @@ pub fn run(domain_name: String) -> String {
 
         if conn.is_closed() {
             let ret = format!("{:?}", conn.stats());
-            if (conn.stats().recv == 0) {
-                return format!("recv={}, sent={}; Domain does not support QUIC", conn.stats().recv, conn.stats().sent)
+            if conn.stats().recv == 0 {
+                return format!("[error] recv={}, sent={}; Domain does not support QUIC", conn.stats().recv, conn.stats().sent)
             }
-            return ret;
+            return format!("[success] {}", ret);
         }
 
         // Create a new HTTP/3 connection once the QUIC connection is established.
@@ -325,10 +323,10 @@ pub fn run(domain_name: String) -> String {
 
         if conn.is_closed() {
             let ret = format!("{:?}", conn.stats());
-            if (conn.stats().recv == 0) {
-                return format!("recv={}, sent={}; Domain does not support QUIC", conn.stats().recv, conn.stats().sent)
+            if conn.stats().recv == 0 {
+                return format!("[error] recv={}, sent={}; Domain does not support QUIC", conn.stats().recv, conn.stats().sent)
             }
-            return ret;
+            return format!("[success] {}", ret);
         }
     }
 
