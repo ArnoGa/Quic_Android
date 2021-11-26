@@ -3,10 +3,12 @@ package com.quicandroid;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -23,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                                "https://nghttp2.org:4433", "https://test.privateoctopus.com:4433", "https://h2o.examp1e.net",
                                                "https://quic.westus.cloudapp.azure.com", "https://docs.trafficserver.apache.org/en/latest" };
     private String res = "";
+    private final QuicRequest g = new QuicRequest();
+    private Worker task;
+    private Button btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +55,42 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     public void sendMessage(View view) {
-        QuicRequest g = new QuicRequest();
-        String r = g.sendQuicRequest(res);
-        ((TextView)findViewById(R.id.stats)).setText(r);
+        btn = (Button) findViewById(R.id.button);
+        btn.setEnabled(false);
+        ((TextView) findViewById(R.id.stats)).setText("Waiting...");
+        task = new Worker();
+        task.execute(res);
+    }
+
+    private class Worker extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... res) {
+            String r = g.sendQuicRequest(res[0]);
+            System.out.println(r);
+            return r;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            ((TextView) findViewById(R.id.stats)).setText(result);
+            btn.setEnabled(true);
+        }
     }
 
     public void nextScreen(View view) {
+        if (task != null) task.cancel(true);
         startActivity(new Intent(MainActivity.this, Activity2.class));
+    }
+
+    public void previousScreen(View view) {
+        if (task != null) task.cancel(true);
+        startActivity(new Intent(MainActivity.this, Activity3.class));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Cancel running worker to avoid memory leaks
+        if (task != null) task.cancel(true);
     }
 }
