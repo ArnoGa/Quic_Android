@@ -26,6 +26,7 @@ pub fn run(domain_name: String) -> String {
 
     let mut buf = [0; 65535];
     let mut out = [0; MAX_DATAGRAM_SIZE];
+    let mut response_headers = String::from("");
 
     let url;
     if domain_name == "ingi" {
@@ -204,7 +205,7 @@ pub fn run(domain_name: String) -> String {
             if conn.stats().recv == 0 {
                 return format!("[error] recv={}, sent={}; Domain does not support QUIC", conn.stats().recv, conn.stats().sent)
             }
-            return format!("[success] {}", ret);
+            return format!("[success] \n response headers: \n {} \n stats: \n {}", response_headers, ret);
         }
 
         // Create a new HTTP/3 connection once the QUIC connection is established.
@@ -236,6 +237,20 @@ pub fn run(domain_name: String) -> String {
                             "got response headers {:?} on stream id {}",
                             list, stream_id
                         );
+                        for header in list {
+                            let name = quiche::h3::NameValue::name(&header);
+                            let value = quiche::h3::NameValue::value(&header);
+                            let mut concat_header = String::from("");
+                            for c in name {
+                                concat_header.push(*c as char);
+                            }
+                            concat_header.push_str(": ");
+                            for c in value {
+                                concat_header.push(*c as char);
+                            }
+                            concat_header.push_str("\n");
+                            response_headers.push_str(&concat_header)
+                        }
                     },
 
                     Ok((stream_id, quiche::h3::Event::Data)) => {
@@ -326,7 +341,7 @@ pub fn run(domain_name: String) -> String {
             if conn.stats().recv == 0 {
                 return format!("[error] recv={}, sent={}; Domain does not support QUIC", conn.stats().recv, conn.stats().sent)
             }
-            return format!("[success] {}", ret);
+            return format!("[success] \n response headers: \n {} \n stats: \n {}", response_headers, ret);
         }
     }
 
@@ -343,7 +358,7 @@ pub extern fn quic_request(to: *const c_char) -> *mut c_char {
 
     let stats = run(domain_name.to_string());
 
-    CString::new("Result: ".to_owned() + stats.as_str() + "\n Domain name entered: " + domain_name).unwrap().into_raw()
+    CString::new("Result: ".to_owned() + stats.as_str() + "\n\n Domain name entered: " + domain_name).unwrap().into_raw()
 }
 
 
