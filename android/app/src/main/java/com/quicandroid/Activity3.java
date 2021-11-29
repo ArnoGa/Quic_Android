@@ -3,11 +3,14 @@ package com.quicandroid;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -17,38 +20,65 @@ public class Activity3 extends AppCompatActivity {
         System.loadLibrary("quic_android");
     }
 
-    private static final Server[] servers = {
-            new Server("ingi", "Cloudflare Quiche"),
-            new Server("https://quic.aiortc.org", "aioquic"), new Server("https://pgjones.dev", "aioquic"),
-            new Server("https://cloudflare-quic.com", "Cloudflare Quiche"), new Server("https://quic.tech:8443", "Cloudflare Quiche"),
-            new Server("https://www.facebook.com", "mvfst"), new Server("https://fb.mvfst.net:4433", "mvfst"),
-            new Server("https://quic.rocks:4433", "Google quiche"),
-            new Server("https://f5quic.com:4433", "F5"),
-            new Server("https://www.litespeedtech.com", "lsquic"),
-            new Server("https://nghttp2.org:4433", "ngtcp2"),
-            new Server("https://test.privateoctopus.com:4433", "picoquic"),
-            new Server("https://h2o.examp1e.net", "h2o/quicly"),
-            new Server("https://quic.westus.cloudapp.azure.com", "msquic"),
-            new Server("https://docs.trafficserver.apache.org", "Apache Traffic Server")
-    };
-    private StringBuilder output = new StringBuilder();
+    private Server[] servers;
     private final QuicRequest g = new QuicRequest();
     private ArrayList<Worker> workers;
     private Button btn;
+    ArrayAdapter<Server> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_3);
+
         workers = new ArrayList<>();
+        servers = new Server[]{
+                new Server("ingi", "Cloudflare Quiche"),
+                new Server("https://quic.aiortc.org", "aioquic"), new Server("https://pgjones.dev", "aioquic"),
+                new Server("https://cloudflare-quic.com", "Cloudflare Quiche"), new Server("https://quic.tech:8443", "Cloudflare Quiche"),
+                new Server("https://www.facebook.com", "mvfst"), new Server("https://fb.mvfst.net:4433", "mvfst"),
+                new Server("https://quic.rocks:4433", "Google quiche"),
+                new Server("https://f5quic.com:4433", "F5"),
+                new Server("https://www.litespeedtech.com", "lsquic"),
+                new Server("https://nghttp2.org:4433", "ngtcp2"),
+                new Server("https://test.privateoctopus.com:4433", "picoquic"),
+                new Server("https://h2o.examp1e.net", "h2o/quicly"),
+                new Server("https://quic.westus.cloudapp.azure.com", "msquic"),
+                new Server("https://docs.trafficserver.apache.org", "Apache Traffic Server")
+        };
+
+        ListView simpleList = (ListView) findViewById(R.id.simpleListView);
+        arrayAdapter = new ArrayAdapter<Server>(Activity3.this, android.R.layout.simple_list_item_1, servers) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View row = super.getView(position, convertView, parent);
+
+                if (getItem(position).getResult() == 0) {
+                    row.setBackgroundColor(Color.TRANSPARENT);
+                }
+                else if (getItem(position).getResult() == 1) {
+                    row.setBackgroundColor(Color.GREEN);
+                }
+                else {
+                    row.setBackgroundColor (Color.RED);
+                }
+                return row;
+            }
+        };
+        simpleList.setAdapter(arrayAdapter);
     }
 
     public void launch(View view) {
-        // Reset output and workers
+        // Disable launch button
         btn = (Button) findViewById(R.id.launch);
         btn.setEnabled(false);
-        output.setLength(0);
-        ((TextView) findViewById(R.id.stats)).setText("Waiting...");
+
+        // Reset previous results and background color
+        for (Server server : servers) {
+            server.setResult(0);
+        }
+
+        // Reset workers
         workers = new ArrayList<>();
 
         // Run one worker per server
@@ -63,21 +93,15 @@ public class Activity3 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Integer... index) {
             String r = g.sendQuicRequest(servers[index[0]].getUrl());
-            if (r.startsWith("Result: [success]")) {
-                output.append(String.format("%s -> succeeded", servers[index[0]].toString()));
-            }
-            else {
-                output.append(String.format("%s -> failed", servers[index[0]].toString()));
-            }
-            output.append("\n\n");
-            System.out.println(output.toString());
+            System.out.println(r);
+            servers[index[0]].setResult(r.startsWith("Result: [success]") ? 1 : 2);
             return index[0] == servers.length - 1;
         }
 
         @Override
         protected void onPostExecute(Boolean last) {
-            ((TextView) findViewById(R.id.stats)).setText(output.toString());
-            if (last) btn.setEnabled(true);
+            arrayAdapter.notifyDataSetChanged();
+            if (last) btn.setEnabled(true); // Enable launch button
         }
     }
 

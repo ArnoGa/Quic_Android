@@ -11,22 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <ScrollView
+        <ListView
+            android:id="@+id/simpleListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/LL1"
-            android:layout_weight="1"
             android:layout_alignParentTop="true"
+            android:divider="@color/black"
+            android:dividerHeight="1dp"
             android:layout_margin="10dp"
-            android:fillViewport="true">
-
-            <TextView
-                android:id="@+id/stats"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Result" />
-        </ScrollView>
+            android:listSelector="@android:color/transparent">
+        </ListView>
 
         <LinearLayout
             android:id="@+id/LL1"
