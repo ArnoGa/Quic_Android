@@ -19,11 +19,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private Spinner spinner;
-    private static final String[] websites = { "Ingi Server",
-                                               "https://quic.aiortc.org", "https://cloudflare-quic.com", "https://www.facebook.com",
-                                               "https://quic.rocks:4433", "https://f5quic.com:4433", "https://www.litespeedtech.com",
-                                               "https://nghttp2.org:4433", "https://test.privateoctopus.com:4433", "https://h2o.examp1e.net",
-                                               "https://quic.westus.cloudapp.azure.com", "https://docs.trafficserver.apache.org/en/latest" };
+    private static final Server[] servers = {
+            new Server("Ingi Server", "Cloudflare Quiche"),
+            new Server("https://quic.aiortc.org", "aioquic"), new Server("https://pgjones.dev", "aioquic"),
+            new Server("https://cloudflare-quic.com", "Cloudflare Quiche"), new Server("https://quic.tech:8443", "Cloudflare Quiche"),
+            new Server("https://www.facebook.com", "mvfst"), new Server("https://fb.mvfst.net:4433", "mvfst"),
+            new Server("https://quic.rocks:4433", "Google quiche"),
+            new Server("https://f5quic.com:4433", "F5"),
+            new Server("https://www.litespeedtech.com", "lsquic"),
+            new Server("https://nghttp2.org:4433", "ngtcp2"),
+            new Server("https://test.privateoctopus.com:4433", "picoquic"),
+            new Server("https://h2o.examp1e.net", "h2o/quicly"),
+            new Server("https://quic.westus.cloudapp.azure.com", "msquic"),
+            new Server("https://docs.trafficserver.apache.org", "Apache Traffic Server")
+    };
+
     private String res = "";
     private final QuicRequest g = new QuicRequest();
     private Worker task;
@@ -35,10 +45,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
 
         spinner = findViewById(R.id.spinner);
-        ArrayAdapter<String>adapter = new ArrayAdapter<>(MainActivity.this,
-                android.R.layout.simple_spinner_item, websites);
+        ArrayAdapter<Server>adapter = new ArrayAdapter<>(MainActivity.this,
+                android.R.layout.simple_spinner_item, servers);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
     }
@@ -46,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
         if (position == 0) res = "ingi";
-        else res = websites[position];
+        else res = servers[position].getUrl();
     }
 
     @Override

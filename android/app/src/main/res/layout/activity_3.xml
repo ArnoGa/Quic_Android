@@ -18,11 +18,12 @@
             android:layout_above="@+id/LL1"
             android:layout_weight="1"
             android:layout_alignParentTop="true"
+            android:layout_margin="10dp"
             android:fillViewport="true">
 
             <TextView
                 android:id="@+id/stats"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Result" />
         </ScrollView>
@@ -41,6 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_margin="10dp"
                 android:onClick="launch"
                 android:text="Launch" />
 
@@ -49,6 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_margin="10dp"
                 android:onClick="previousScreen"
                 android:text="Servers" />
 

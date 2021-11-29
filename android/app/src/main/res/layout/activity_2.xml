@@ -6,34 +6,63 @@
     android:layout_height="match_parent"
     tools:context=".Activity2">
 
-    <TextView
-        android:id="@+id/stats"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|center_horizontal"
-        android:text="Stats" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:onClick="sendMessage"
-        android:text="Launch" />
-
-    <EditText
-        android:id="@+id/input"
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:hint="Domain name"
-        tools:ignore="SpeakableTextPresentCheck" />
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
-        android:onClick="previousScreen"
-        android:text="Servers" />
+        <EditText
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:hint="Domain name"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/LL1"
+            android:layout_below="@id/input"
+            android:layout_weight="1"
+            android:layout_margin="10dp"
+            android:fillViewport="true">
+
+            <TextView
+                android:id="@+id/stats"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Result" />
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/LL1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center|bottom"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:onClick="previousScreen"
+                android:text="Servers" />
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:onClick="sendMessage"
+                android:text="Launch" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
