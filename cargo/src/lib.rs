@@ -203,7 +203,7 @@ pub fn run(domain_name: String) -> String {
         if conn.is_closed() {
             let ret = format!("{:?}", conn.stats());
             if conn.stats().recv == 0 {
-                return format!("[error] recv={}, sent={}; Domain does not support QUIC", conn.stats().recv, conn.stats().sent)
+                return format!("[error] recv={}, sent={}; Domain does not support QUIC or only partially", conn.stats().recv, conn.stats().sent)
             }
             return format!("[success] \n response headers: \n {} \n stats: \n {}", response_headers, ret);
         }
@@ -339,7 +339,7 @@ pub fn run(domain_name: String) -> String {
         if conn.is_closed() {
             let ret = format!("{:?}", conn.stats());
             if conn.stats().recv == 0 {
-                return format!("[error] recv={}, sent={}; Domain does not support QUIC", conn.stats().recv, conn.stats().sent)
+                return format!("[error] recv={}, sent={}; Domain does not support QUIC or only partially", conn.stats().recv, conn.stats().sent)
             }
             return format!("[success] \n response headers: \n {} \n stats: \n {}", response_headers, ret);
         }

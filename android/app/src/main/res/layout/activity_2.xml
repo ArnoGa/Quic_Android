@@ -15,7 +15,7 @@
             android:id="@+id/input"
             android:layout_width="match_parent"
             android:layout_height="61dp"
-            android:hint="Domain name"
+            android:hint="https://example.com"
             tools:ignore="SpeakableTextPresentCheck" />
 
         <ScrollView
