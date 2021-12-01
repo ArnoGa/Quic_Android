@@ -33,7 +33,7 @@ public class Activity3 extends AppCompatActivity {
 
         workers = new ArrayList<>();
         servers = new Server[]{
-                new Server("ingi", "Cloudflare Quiche"),
+                new Server("https://linfo2142-grp4.info.ucl.ac.be", "Cloudflare Quiche"),
                 new Server("https://quic.aiortc.org", "aioquic"), new Server("https://pgjones.dev", "aioquic"),
                 new Server("https://cloudflare-quic.com", "Cloudflare Quiche"), new Server("https://quic.tech:8443", "Cloudflare Quiche"),
                 new Server("https://www.facebook.com", "mvfst"), new Server("https://fb.mvfst.net:4433", "mvfst"),

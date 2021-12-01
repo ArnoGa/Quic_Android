@@ -14,31 +14,19 @@ extern crate url;
 
 const MAX_DATAGRAM_SIZE: usize = 1350;
 
-fn hex_dump(buf: &[u8]) -> String {
-    let vec: Vec<String> = buf.iter().map(|b| format!("{:02x}", b)).collect();
-
-    vec.join("")
-}
-
 
 pub fn run(domain_name: String) -> String { 
-    println!("start");
 
     let mut buf = [0; 65535];
     let mut out = [0; MAX_DATAGRAM_SIZE];
     let mut response_headers = String::from("");
 
     let url;
-    if domain_name == "ingi" {
-        url = url::Url::parse("https://130.104.229.81:443").unwrap(); // Ingi server
-    }
-    else {
-        // Domain name
-        url = match url::Url::parse(&domain_name) {
-            Err(_) => { return "[error] Invalid domain name".to_string(); },
-            Ok(parsed_url) => parsed_url,
-        };
-    }
+    // Domain name
+    url = match url::Url::parse(&domain_name) {
+        Err(_) => { return "[error] \n\nInvalid domain name".to_string(); },
+        Ok(parsed_url) => parsed_url,
+    };
 
     // Setup the event loop.
     let poll = mio::Poll::new().unwrap();
@@ -46,7 +34,7 @@ pub fn run(domain_name: String) -> String {
 
     // Resolve server address.
     let peer_addr = match url.to_socket_addrs() {
-        Err(_) => { return "[error] Cannot resolve server address".to_string(); },
+        Err(_) => { return "[error] \n\nCannot resolve server address".to_string(); },
         Ok(mut peer_addr_result) => peer_addr_result.next().unwrap(),
     };
 
@@ -74,7 +62,6 @@ pub fn run(domain_name: String) -> String {
     // Create the configuration for the QUIC connection.
     let mut config = quiche::Config::new(quiche::PROTOCOL_VERSION).unwrap();
 
-    // *CAUTION*: this should not be set to `false` in production!!!
     config.verify_peer(false);
 
     config
@@ -104,25 +91,15 @@ pub fn run(domain_name: String) -> String {
     let mut conn =
         quiche::connect(url.domain(), &scid, peer_addr, &mut config).unwrap();
 
-    println!(
-        "connecting to {:} from {:} with scid {}",
-        peer_addr,
-        socket.local_addr().unwrap(),
-        hex_dump(&scid)
-    );
-
     let (write, send_info) = conn.send(&mut out).expect("initial send failed");
 
     while let Err(e) = socket.send_to(&out[..write], &send_info.to) {
         if e.kind() == std::io::ErrorKind::WouldBlock {
-            //println!("send() would block");
             continue;
         }
 
-        panic!("send() failed: {:?}", e);
+        return format!("send() failed: {:?}", e);
     }
-
-    println!("written {}", write);
 
     let h3_config = quiche::h3::Config::new().unwrap();
 
@@ -145,8 +122,6 @@ pub fn run(domain_name: String) -> String {
         quiche::h3::Header::new(b"user-agent", b"quiche"),
     ];
 
-    let req_start = std::time::Instant::now();
-
     let mut req_sent = false;
 
     loop {
@@ -159,10 +134,7 @@ pub fn run(domain_name: String) -> String {
             // has expired, so handle it without attempting to read packets. We
             // will then proceed with the send loop.
             if events.is_empty() {
-                println!("timed out");
-
                 conn.on_timeout();
-
                 break 'read;
             }
 
@@ -173,39 +145,30 @@ pub fn run(domain_name: String) -> String {
                     // There are no more UDP packets to read, so end the read
                     // loop.
                     if e.kind() == std::io::ErrorKind::WouldBlock {
-                        //println!("recv() would block");
                         break 'read;
                     }
-
-                    panic!("recv() failed: {:?}", e);
+                    return format!("recv() failed: {:?}", e);
                 },
             };
-
-            println!("got {} bytes", len);
 
             let recv_info = quiche::RecvInfo { from };
 
             // Process potentially coalesced packets.
-            let read = match conn.recv(&mut buf[..len], recv_info) {
+            let _read = match conn.recv(&mut buf[..len], recv_info) {
                 Ok(v) => v,
 
-                Err(e) => {
-                    println!("recv failed: {:?}", e);
+                Err(_e) => {
                     continue 'read;
                 },
             };
-
-            println!("processed {} bytes", read);
         }
-
-        //println!("done reading");
 
         if conn.is_closed() {
             let ret = format!("{:?}", conn.stats());
             if conn.stats().recv == 0 {
-                return format!("[error] recv={}, sent={}; Domain does not support QUIC or only partially", conn.stats().recv, conn.stats().sent)
+                return format!("[error] \n\nrecv={}, sent={} \nDomain does not support QUIC or only partially", conn.stats().recv, conn.stats().sent);
             }
-            return format!("[success] \n response headers: \n {} \n stats: \n {}", response_headers, ret);
+            return format!("[success] \n\nresponse headers: \n{} \nstats: \n{}", response_headers, ret);
         }
 
         // Create a new HTTP/3 connection once the QUIC connection is established.
@@ -220,10 +183,7 @@ pub fn run(domain_name: String) -> String {
         // all requests have been sent.
         if let Some(h3_conn) = &mut http3_conn {
             if !req_sent {
-                println!("sending HTTP request {:?}", req);
-
                 h3_conn.send_request(&mut conn, &req, true).unwrap();
-
                 req_sent = true;
             }
         }
@@ -232,11 +192,7 @@ pub fn run(domain_name: String) -> String {
             // Process HTTP/3 events.
             loop {
                 match http3_conn.poll(&mut conn) {
-                    Ok((stream_id, quiche::h3::Event::Headers { list, .. })) => {
-                        println!(
-                            "got response headers {:?} on stream id {}",
-                            list, stream_id
-                        );
+                    Ok((_stream_id, quiche::h3::Event::Headers { list, .. })) => {
                         for header in list {
                             let name = quiche::h3::NameValue::name(&header);
                             let value = quiche::h3::NameValue::value(&header);
@@ -254,51 +210,31 @@ pub fn run(domain_name: String) -> String {
                     },
 
                     Ok((stream_id, quiche::h3::Event::Data)) => {
-                        while let Ok(read) =
+                        while let Ok(_read) =
                             http3_conn.recv_body(&mut conn, stream_id, &mut buf)
                         {
-                            println!(
-                                "got {} bytes of response data on stream {}",
-                                read, stream_id
-                            );
 
-                            print!("{}", unsafe {
-                                std::str::from_utf8_unchecked(&buf[..read])
-                            });
                         }
                     },
 
                     Ok((_stream_id, quiche::h3::Event::Finished)) => {
-                        println!(
-                            "response received in {:?}, closing...",
-                            req_start.elapsed()
-                        );
-
                         conn.close(true, 0x00, b"kthxbye").unwrap();
                     },
 
-                    Ok((_stream_id, quiche::h3::Event::Reset(e))) => {
-                        println!(
-                            "request was reset by peer with {}, closing...",
-                            e
-                        );
-
+                    Ok((_stream_id, quiche::h3::Event::Reset(_e))) => {
                         conn.close(true, 0x00, b"kthxbye").unwrap();
                     },
 
                     Ok((_flow_id, quiche::h3::Event::Datagram)) => (),
 
-                    Ok((goaway_id, quiche::h3::Event::GoAway)) => {
-                        println!("GOAWAY id={}", goaway_id);
+                    Ok((_goaway_id, quiche::h3::Event::GoAway)) => {
                     },
 
                     Err(quiche::h3::Error::Done) => {
                         break;
                     },
 
-                    Err(e) => {
-                        println!("HTTP/3 processing failed: {:?}", e);
-
+                    Err(_e) => {
                         break;
                     },
                 }
@@ -312,13 +248,10 @@ pub fn run(domain_name: String) -> String {
                 Ok(v) => v,
 
                 Err(quiche::Error::Done) => {
-                    //println!("done writing");
                     break;
                 },
 
-                Err(e) => {
-                    println!("send failed: {:?}", e);
-
+                Err(_e) => {
                     conn.close(false, 0x1, b"fail").ok();
                     break;
                 },
@@ -326,22 +259,18 @@ pub fn run(domain_name: String) -> String {
 
             if let Err(e) = socket.send_to(&out[..write], &send_info.to) {
                 if e.kind() == std::io::ErrorKind::WouldBlock {
-                    //println!("send() would block");
                     break;
                 }
-
-                panic!("send() failed: {:?}", e);
+                return format!("send() failed: {:?}", e);
             }
-
-            println!("written {}", write);
         }
 
         if conn.is_closed() {
             let ret = format!("{:?}", conn.stats());
             if conn.stats().recv == 0 {
-                return format!("[error] recv={}, sent={}; Domain does not support QUIC or only partially", conn.stats().recv, conn.stats().sent)
+                return format!("[error] \n\nrecv={}, sent={} \nDomain does not support QUIC or only partially", conn.stats().recv, conn.stats().sent);
             }
-            return format!("[success] \n response headers: \n {} \n stats: \n {}", response_headers, ret);
+            return format!("[success] \n\nresponse headers: \n{} \nstats: \n{}", response_headers, ret);
         }
     }
 
@@ -357,8 +286,7 @@ pub extern fn quic_request(to: *const c_char) -> *mut c_char {
     };
 
     let stats = run(domain_name.to_string());
-
-    CString::new("Result: ".to_owned() + stats.as_str() + "\n\n Domain name entered: " + domain_name).unwrap().into_raw()
+    CString::new("Result: ".to_owned() + stats.as_str() + "\n\nDomain name entered: " + domain_name).unwrap().into_raw()
 }
 
 
@@ -375,12 +303,9 @@ pub mod android {
 
     #[no_mangle]
     pub unsafe extern fn Java_com_quicandroid_QuicRequest_quicRequest(env: JNIEnv, _: JClass, java_pattern: JString) -> jstring {
-        // Our Java companion code might pass-in "world" as a string, hence the name.
         let world = quic_request(env.get_string(java_pattern).expect("invalid pattern string").as_ptr());
-        // Retake pointer so that we can use it below and allow memory to be freed when it goes out of scope.
         let world_ptr = CString::from_raw(world);
         let output = env.new_string(world_ptr.to_str().unwrap()).expect("Couldn't create java string!");
-
         output.into_inner()
     }
 }
