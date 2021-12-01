@@ -93,7 +93,6 @@ public class Activity3 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Integer... index) {
             String r = g.sendQuicRequest(servers[index[0]].getUrl());
-            System.out.println(r);
             servers[index[0]].setResult(r.startsWith("Result: [success]") ? 1 : 2);
             return index[0] == servers.length - 1;
         }

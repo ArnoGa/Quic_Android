@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         protected String doInBackground(String... res) {
             String r = g.sendQuicRequest(res[0]);
-            System.out.println(r);
             return r;
         }
 

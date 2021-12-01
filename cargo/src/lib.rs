@@ -23,10 +23,15 @@ pub fn run(domain_name: String) -> String {
 
     let url;
     // Domain name
-    url = match url::Url::parse(&domain_name) {
-        Err(_) => { return "[error] \n\nInvalid domain name".to_string(); },
-        Ok(parsed_url) => parsed_url,
-    };
+    if domain_name == "https://linfo2142-grp4.info.ucl.ac.be" {
+        url = url::Url::parse("https://130.104.229.81:443").unwrap(); // Ingi server
+    }
+    else {
+        url = match url::Url::parse(&domain_name) {
+            Err(_) => { return "[error] \n\nInvalid domain name".to_string(); },
+            Ok(parsed_url) => parsed_url,
+        };
+    }
 
     // Setup the event loop.
     let poll = mio::Poll::new().unwrap();
